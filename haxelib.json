@@ -1,0 +1,23 @@
+{
+    "name": "trailrenderer",
+    "url": "https://github.com/Blossomical/Trail-Renderer",
+    "license": "MIT",
+    "tags": [
+        "flixel",
+        "openfl",
+        "game",
+        "extension"
+    ],
+    "description": "Dynamic Trail renderer for Flixel",
+    "version": "1.0.0",
+    "releasenote": "First release",
+    "contributors": [
+        "Blossomical"
+    ],
+    "dependencies": {
+        "flixel": "",
+        "openfl": "",
+        "lime": ""
+    },
+    "classPath": "src/"
+}

@@ -23,6 +23,8 @@ class DynamicTrailShader extends CustomGeometry
 		uniform bool useErosion;
 		uniform bool useFadeAlpha;
 
+		uniform float trail_alpha;
+
 		uniform sampler2D erosionTexture;
 		uniform float erosionOffset;
 		uniform float alphaFadeOffset;
@@ -75,6 +77,7 @@ class DynamicTrailShader extends CustomGeometry
 		autoDivide.value = [false];
 		textureSegments.value = [1];
 		textureSegmentLength.value = [0];
+		trail_alpha.value = [1];
 		// default all values so the shader program doesn't freak out
 	}
 } // the shader that makes it look juicy
@@ -201,6 +204,11 @@ class DynamicTrail extends FlxSprite
 	 * Size of each segment for the auto division. 
 	 */
 	public var textureSegmentLength(default, set):Float = 0;
+	
+	/**
+	 * transparency of the trail 
+	 */
+	public var trailAlpha(default, set):Float = 1;
 	
 	var lastPositionX:Null<Float>;
 	var lastPositionY:Null<Float>;
@@ -557,5 +565,11 @@ class DynamicTrail extends FlxSprite
 	{
 		trailShader.textureSegmentLength.value = [value];
 		return textureSegmentLength = value;
+	}
+	
+	private function set_trailAlpha(value:Float):Float
+	{
+		trailShader.trail_alpha.value = [value];
+		return trailAlpha = value;
 	}
 }

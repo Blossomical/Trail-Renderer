@@ -7,9 +7,10 @@ import lime.utils.Log;
 #if !macro
 @:autoBuild(trailrenderer.shaders.GeometryShaderMacro.build())
 #end
-class GeometryShader extends FlxShader {
+class GeometryShader extends FlxShader
+{
 	public var geometrySource:String;
-
+	
 	@:glFragmentHeader('
         #pragma header
 
@@ -93,44 +94,53 @@ class GeometryShader extends FlxShader {
             #pragma body
         }
     ')
-	public function new() {
+	public function new()
+	{
 		super();
 	}
-
-	@:noCompletion override private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram {
+	
+	@:noCompletion override private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
+	{
 		@:privateAccess var gl = __context.gl;
-
+		
+		@:privateAccess var mvs:Int = __context.__context.gl.getInteger(0x8DE0);
+		
 		var vertexShader = __createGLShader(vertexSource, gl.VERTEX_SHADER);
 		var fragmentShader = __createGLShader(fragmentSource, gl.FRAGMENT_SHADER);
-		var geometryShader = geometrySource != null ? __createGLShader(geometrySource, 0x8DD9) : null;
-
+		var geometryShader = geometrySource != null ? __createGLShader(StringTools.replace(geometrySource, 'GEOM_MAX_VERTICES', '$mvs'), 0x8DD9) : null;
+		
 		var program = gl.createProgram();
-
+		
 		// Fix support for drivers that don't draw if attribute 0 is disabled
-		for (param in __paramFloat) {
-			if (param.name.indexOf("Position") > -1 && StringTools.startsWith(param.name, "openfl_")) {
+		for (param in __paramFloat)
+		{
+			if (param.name.indexOf("Position") > -1 && StringTools.startsWith(param.name, "openfl_"))
+			{
 				gl.bindAttribLocation(program, 0, param.name);
 				break;
 			}
 		}
-
+		
 		gl.attachShader(program, vertexShader);
 		gl.attachShader(program, fragmentShader);
 		if (geometryShader != null)
 			gl.attachShader(program, geometryShader);
 		gl.linkProgram(program);
-
-		if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0) {
+		
+		if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0)
+		{
 			var message = "Unable to initialize the shader program";
 			message += "\n" + gl.getProgramInfoLog(program);
 			Log.error(message);
 		}
-
+		
 		return program;
 	}
-
-	@:noCompletion override private function __initGL():Void {
-		if (__glSourceDirty || __paramBool == null) {
+	
+	@:noCompletion override private function __initGL():Void
+	{
+		if (__glSourceDirty || __paramBool == null)
+		{
 			__glSourceDirty = false;
 			program = null;
 			__inputBitmapData = new Array();
@@ -140,7 +150,8 @@ class GeometryShader extends FlxShader {
 			__processGLData(glVertexSource, "attribute");
 			__processGLData(glVertexSource, "uniform");
 			__processGLData(glFragmentSource, "uniform");
-			if (geometrySource != null) {
+			if (geometrySource != null)
+			{
 				// __processGLData(geometrySource, "attribute");
 				__processGLData(geometrySource, "uniform");
 			}

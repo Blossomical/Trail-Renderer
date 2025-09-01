@@ -63,7 +63,7 @@ class DynamicTrailShader extends CustomGeometry
     ')
 	public function new()
 	{
-		super();
+		super(DynamicTrail.glVersion);
 		offsetX.value = [0];
 		offsetY.value = [0];
 		numVertices.value = [0];
@@ -84,6 +84,8 @@ class DynamicTrailShader extends CustomGeometry
 
 class DynamicTrail extends FlxSprite
 {
+	public static var glVersion:String = '330'; // 130+ recommended
+	
 	public var trailShader:DynamicTrailShader;
 	
 	/**

@@ -4,12 +4,15 @@ import flixel.system.FlxAssets.FlxShader;
 import lime.graphics.opengl.GLProgram;
 import lime.utils.Log;
 
+using StringTools;
+
 #if !macro
 @:autoBuild(trailrenderer.shaders.GeometryShaderMacro.build())
 #end
 class GeometryShader extends FlxShader
 {
 	public var geometrySource:String;
+	public var version:String = '330';
 	
 	@:glFragmentHeader('
         #pragma header
@@ -94,8 +97,9 @@ class GeometryShader extends FlxShader
             #pragma body
         }
     ')
-	public function new()
+	public function new(version:String = '330')
 	{
+		this.version = version;
 		super();
 	}
 	
@@ -105,9 +109,9 @@ class GeometryShader extends FlxShader
 		
 		@:privateAccess var mvs:Int = __context.__context.gl.getInteger(0x8DE0);
 		
-		var vertexShader = __createGLShader(vertexSource, gl.VERTEX_SHADER);
-		var fragmentShader = __createGLShader(fragmentSource, gl.FRAGMENT_SHADER);
-		var geometryShader = geometrySource != null ? __createGLShader(StringTools.replace(geometrySource, 'GEOM_MAX_VERTICES', '$mvs'), 0x8DD9) : null;
+		var vertexShader = __createGLShader('#version $version\n' + vertexSource, gl.VERTEX_SHADER);
+		var fragmentShader = __createGLShader('#version $version\n' + fragmentSource, gl.FRAGMENT_SHADER);
+		var geometryShader = geometrySource != null ? __createGLShader(geometrySource.replace('GEOM_MAX_VERTICES', '$mvs'), 0x8DD9) : null;
 		
 		var program = gl.createProgram();
 		

@@ -243,7 +243,7 @@ class DynamicTrail extends FlxSprite
 	{
 		if (lastPositionX != x || lastPositionY != y)
 		{
-			if (trailShader.vertices.length >= maxVertices * 2)
+			if (trailShader.vertices.length >= Math.min(maxVertices, trailShader.max_vertices) * 2)
 			{
 				trailShader.vertices.splice(0, 4);
 				trailShader.uvtData.splice(0, 4);

@@ -1,6 +1,7 @@
 package trailrenderer.shaders;
 
 import flixel.math.FlxMath;
+import lime.graphics.opengl.GLProgram;
 import lime.utils.Float32Array;
 
 class CustomGeometry extends GeometryShader
@@ -68,8 +69,8 @@ class CustomGeometry extends GeometryShader
 	public function new(glVersion:String = null)
 	{
 		super(glVersion);
-		vertices = new DrawData<Float>([], 512);
-		uvtData = new DrawData<Float>([], 512);
+		vertices = new DrawData<Float>([], max_vertices * 2);
+		uvtData = new DrawData<Float>([], max_vertices * 2);
 		
 		vertices.changeCallback = (index, value) ->
 		{

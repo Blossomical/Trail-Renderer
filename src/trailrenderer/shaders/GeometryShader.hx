@@ -13,6 +13,7 @@ class GeometryShader extends FlxShader
 {
 	public var geometrySource:String;
 	public var version:String = null;
+	public var max_vertices:Int = 128;
 	
 	@:glFragmentHeader('
         #pragma header
@@ -99,6 +100,7 @@ class GeometryShader extends FlxShader
     ')
 	public function new(version:String = null)
 	{
+		@:privateAccess max_vertices = lime.app.Application.current.window.stage.context3D.__context.gl.getInteger(0x8DE0);
 		this.version = version;
 		super();
 	}
@@ -107,7 +109,8 @@ class GeometryShader extends FlxShader
 	{
 		@:privateAccess var gl = __context.gl;
 		
-		@:privateAccess var mvs:Float = Math.min(256, __context.__context.gl.getInteger(0x8DE0)); // bound to 256 for safety reasons
+		@:privateAccess var mvs:Int = __context.__context.gl.getInteger(0x8DE0); // just incase
+		max_vertices = mvs;
 		
 		var vertexShader = __createGLShader((version != null ? '#version $version\n' : '') + vertexSource, gl.VERTEX_SHADER);
 		var fragmentShader = __createGLShader((version != null ? '#version $version\n' : '') + fragmentSource, gl.FRAGMENT_SHADER);

@@ -34,7 +34,7 @@ class DynamicTrailShader extends CustomGeometry
 		uniform float textureSegmentLength;
 
 		uniform float geometry_totalLength;
-		in float segDist;
+		varying float segDist;
         void main() { 
             float alphaV = geometryTextureCoord.x;
 			float coordU = geometryTextureCoord.x;
@@ -84,7 +84,7 @@ class DynamicTrailShader extends CustomGeometry
 
 class DynamicTrail extends FlxSprite
 {
-	public static var glVersion:String = '330'; // 130+ recommended
+	public static var glVersion:String = null;
 	
 	public var trailShader:DynamicTrailShader;
 	

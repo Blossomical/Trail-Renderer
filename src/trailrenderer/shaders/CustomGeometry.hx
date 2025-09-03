@@ -65,7 +65,7 @@ class CustomGeometry extends GeometryShader
             gl_FragColor = flixel_texture2D(texture, geometryTextureCoord);
         }
     ')
-	public function new(glVersion:String = '330')
+	public function new(glVersion:String = null)
 	{
 		super(glVersion);
 		vertices = new DrawData<Float>([], 512);

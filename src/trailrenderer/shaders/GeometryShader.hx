@@ -12,7 +12,7 @@ using StringTools;
 class GeometryShader extends FlxShader
 {
 	public var geometrySource:String;
-	public var version:String = '330';
+	public var version:String = null;
 	
 	@:glFragmentHeader('
         #pragma header
@@ -25,7 +25,7 @@ class GeometryShader extends FlxShader
         #define flixel_texture2D flixel_tex2D
 
         uniform sampler2D texture;
-        in vec2 geometryTextureCoord;
+        varying vec2 geometryTextureCoord;
     ')
 	@:glFragmentSource('
         #pragma header
@@ -36,8 +36,8 @@ class GeometryShader extends FlxShader
 	@:glVertexHeader('
         #pragma header
 
-        out mat4 geom_Matrix;
-        out vec4 geom_Position;
+        varying mat4 geom_Matrix;
+        varying vec4 geom_Position;
     ')
 	@:glVertexBody('
         #pragma body
@@ -97,7 +97,7 @@ class GeometryShader extends FlxShader
             #pragma body
         }
     ')
-	public function new(version:String = '330')
+	public function new(version:String = null)
 	{
 		this.version = version;
 		super();
@@ -107,10 +107,10 @@ class GeometryShader extends FlxShader
 	{
 		@:privateAccess var gl = __context.gl;
 		
-		@:privateAccess var mvs:Int = __context.__context.gl.getInteger(0x8DE0);
+		@:privateAccess var mvs:Float = Math.min(256, __context.__context.gl.getInteger(0x8DE0)); // bound to 256 for safety reasons
 		
-		var vertexShader = __createGLShader('#version $version\n' + vertexSource, gl.VERTEX_SHADER);
-		var fragmentShader = __createGLShader('#version $version\n' + fragmentSource, gl.FRAGMENT_SHADER);
+		var vertexShader = __createGLShader((version != null ? '#version $version\n' : '') + vertexSource, gl.VERTEX_SHADER);
+		var fragmentShader = __createGLShader((version != null ? '#version $version\n' : '') + fragmentSource, gl.FRAGMENT_SHADER);
 		var geometryShader = geometrySource != null ? __createGLShader(geometrySource.replace('GEOM_MAX_VERTICES', '$mvs'), 0x8DD9) : null;
 		
 		var program = gl.createProgram();

@@ -27,7 +27,7 @@ abstract DrawData<T>(TDrawData<T>)
 	
 	public function push(value:T):T
 	{
-		if (length >= this.data.length)
+		if (length >= this.length)
 			return value;
 		this.data.push(value);
 		this._self[this.data.length - 1] = value;

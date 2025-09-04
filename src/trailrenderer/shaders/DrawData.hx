@@ -1,9 +1,12 @@
 package trailrenderer.shaders;
 
+import lime.utils.ArrayBufferView;
+import lime.utils.Float32Array;
+
 typedef TDrawData<T> =
 {
-	public var _self(default, null):Array<T>;
 	public var data:Array<T>;
+	public var shaderArray:Float32Array;
 	public var length:Int;
 	@:optional public dynamic function changeCallback(index:Int, value:T):Void;
 }
@@ -11,17 +14,17 @@ typedef TDrawData<T> =
 abstract DrawData<T>(TDrawData<T>)
 {
 	public var length(get, never):Int;
-	public var shaderArray(get, never):Array<T>;
 	public var changeCallback(get, set):(index:Int, value:T) -> Void;
 	public var data(get, set):Array<T>;
+	public var shaderArray(get, never):Float32Array;
 	
 	public function new(data:Array<T>, length:Int = 256)
 	{
 		var data:Array<T> = data ?? [];
 		this = {
 			data: data,
-			_self: [for (i in 0...(length + 1)) data[i] ?? cast 0],
-			length: length
+			length: length,
+			shaderArray: new Float32Array(null, null, data)
 		};
 	}
 	
@@ -30,7 +33,7 @@ abstract DrawData<T>(TDrawData<T>)
 		if (length >= this.length)
 			return value;
 		this.data.push(value);
-		this._self[this.data.length - 1] = value;
+		this.shaderArray[this.data.length - 1] = cast value;
 		if (this.changeCallback != null)
 			this.changeCallback(this.data.length - 1, value);
 		return value;
@@ -43,14 +46,8 @@ abstract DrawData<T>(TDrawData<T>)
 			return false;
 			
 		this.data.remove(x);
-		if (index < this.data.length)
-		{
-			this._self.remove(x);
-			this._self.push(cast 0);
-		}
-		else
-			this._self[index] = cast 0;
-			
+		this.shaderArray[index] = cast 0;
+		
 		if (this.changeCallback != null)
 			this.changeCallback(index, cast 0);
 		return true;
@@ -59,16 +56,15 @@ abstract DrawData<T>(TDrawData<T>)
 	public function clear()
 	{
 		this.data = [];
-		for (i in 0...this.data.length)
-			this._self[i] = cast 0;
+		this.shaderArray = new Float32Array(null, null, this.data);
 		if (this.changeCallback != null)
 			this.changeCallback(0, cast 0);
 	}
 	
 	public function pop():Null<T>
 	{
-		this._self[this.data.length - 1] = cast 0;
 		var value:T = this.data.pop();
+		this.shaderArray[this.data.length] = cast 0;
 		if (this.changeCallback != null)
 			this.changeCallback(this.data.length, cast 0);
 		return value;
@@ -76,9 +72,8 @@ abstract DrawData<T>(TDrawData<T>)
 	
 	public function shift():Null<T>
 	{
-		this._self.shift();
-		this._self.push(cast 0);
 		var value:T = this.data.shift();
+		this.shaderArray[0] = cast 0;
 		if (this.changeCallback != null)
 			this.changeCallback(0, cast 0);
 		return value;
@@ -86,10 +81,10 @@ abstract DrawData<T>(TDrawData<T>)
 	
 	public function splice(pos:Int, len:Int):Array<T>
 	{
-		this._self.splice(pos, len);
-		while (this._self.length < this.length)
-			this._self.push(cast 0);
 		var value:Array<T> = this.data.splice(pos, len);
+		for (i in 0...(len - pos))
+			this.shaderArray[pos + i] = cast 0;
+
 		if (this.changeCallback != null)
 			this.changeCallback(pos, cast 0);
 		return value;
@@ -102,13 +97,14 @@ abstract DrawData<T>(TDrawData<T>)
 		return this.data;
 		
 	@:arrayAccess public function get(index:Int):T
-		return this._self[index];
+		return this.data[index] ?? cast 0;
 		
 	@:arrayAccess public function set(index:Int, value:T):T
 	{
 		if (index >= this.length)
 			return value;
-		this.data[index] = this._self[index] = value;
+		this.data[index] = value;
+		this.shaderArray[index] = cast value;
 		if (this.changeCallback != null)
 			this.changeCallback(index, value);
 		return value;
@@ -116,10 +112,7 @@ abstract DrawData<T>(TDrawData<T>)
 	
 	private function get_length():Int
 		return this.data.length;
-		
-	private function get_shaderArray():Array<T>
-		return this._self;
-		
+
 	private function set_changeCallback(value:(index:Int, value:T) -> Void)
 		return this.changeCallback = value;
 		
@@ -131,11 +124,11 @@ abstract DrawData<T>(TDrawData<T>)
 		
 	private function set_data(value:Array<T>):Array<T>
 	{
-		for (i in 0...Std.int(Math.min(this.length, Math.max(this.data.length, value.length))))
-			this._self[i] = value[i] ?? cast 0;
 		this.data = value;
 		if (this.changeCallback != null)
 			this.changeCallback(0, cast 0);
 		return value;
 	}
+	private function get_shaderArray():Float32Array
+		return this.shaderArray;
 }

@@ -96,7 +96,6 @@ class CustomGeometry extends GeometryShader
 		if (vertices == null)
 			vertices = value;
 		vertices.data = value;
-		// geometry_vertices.value = vertices.shaderArray;
 		
 		return value;
 	}
@@ -106,7 +105,6 @@ class CustomGeometry extends GeometryShader
 		if (uvtData == null)
 			uvtData = value;
 		uvtData.data = value;
-		// geometry_uvtData.value = uvtData.shaderArray;
 		return value;
 	}
 	
@@ -122,8 +120,8 @@ class CustomGeometry extends GeometryShader
 		super.__updateGL();
 		@:privateAccess {
 			var gl = __context.gl;
-			gl.uniform2fv(gl.getUniformLocation(program.__glProgram, "geometry_vertices"), new Float32Array(vertices.shaderArray));
-			gl.uniform2fv(gl.getUniformLocation(program.__glProgram, "geometry_uvtData"), new Float32Array(uvtData.shaderArray));
+			gl.uniform2fv(gl.getUniformLocation(program.__glProgram, "geometry_vertices"), vertices.shaderArray);
+			gl.uniform2fv(gl.getUniformLocation(program.__glProgram, "geometry_uvtData"), uvtData.shaderArray);
 		}
 	}
 	
@@ -132,8 +130,8 @@ class CustomGeometry extends GeometryShader
 		super.__updateGLFromBuffer(shaderBuffer, bufferOffset);
 		@:privateAccess {
 			var gl = __context.gl;
-			gl.uniform2fv(gl.getUniformLocation(program.__glProgram, "geometry_vertices"), new Float32Array(vertices.shaderArray));
-			gl.uniform2fv(gl.getUniformLocation(program.__glProgram, "geometry_uvtData"), new Float32Array(uvtData.shaderArray));
+			gl.uniform2fv(gl.getUniformLocation(program.__glProgram, "geometry_vertices"), vertices.shaderArray);
+			gl.uniform2fv(gl.getUniformLocation(program.__glProgram, "geometry_uvtData"), uvtData.shaderArray);
 		}
 	}
 }

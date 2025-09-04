@@ -26,10 +26,8 @@ class CustomGeometry extends GeometryShader
         uniform mat2 geometry_rotationMatrix;
         uniform vec2 geometry_origin;
 
-        out float segDist;
         void main() {
-            float dist = 0.0;
-            segDist = 0.0;
+            float segDist = 0.0;
 
             for (int j = 0; j < numVertices; j++) {
                 vec2 vertex = geometry_vertices[j] - geometry_origin;
@@ -38,17 +36,12 @@ class CustomGeometry extends GeometryShader
 
                 gl_Position = gl_in[0].gl_Position + geom_Matrix[0] * vec4(vertex, 0.0, 0.0);
                 if (geometry_autoUVT) {
-                    if (j > 0)
-                        dist += length(geometry_vertices[j] - geometry_vertices[j - 1]);
-                    else
-                        dist = 0.0;
-
                     if (j > 1)
                         segDist += length(geometry_vertices[j] - geometry_vertices[j - 2]);
                     else
                         segDist = 0.0;
 
-                    float u = dist / geometry_totalLength;
+                    float u = segDist / geometry_totalLength;
                     float v = (j % 2 == 0) ? 1.0 : 0.0;
 
                     geometryTextureCoord = vec2(u, v);
@@ -80,8 +73,8 @@ class CustomGeometry extends GeometryShader
 			if (autoUVT)
 			{
 				var totalLength:Float = 0;
-				for (i in 1...length)
-					totalLength += FlxMath.vectorLength(vertices.data[i * 2] - vertices.data[i * 2 - 2], vertices.data[i * 2 + 1] - vertices.data[i * 2 - 1]);
+				for (i in 2...length)
+					totalLength += FlxMath.vectorLength(vertices.data[i * 2] - vertices.data[i * 2 - 4], vertices.data[i * 2 + 1] - vertices.data[i * 2 - 3]);
 				geometry_totalLength.value = [totalLength];
 			}
 		}

@@ -98,9 +98,10 @@ class GeometryShader extends FlxShader
             #pragma body
         }
     ')
-	public function new(version:String = null)
+	public function new(version:String = null, components:Int = 6)
 	{
-		@:privateAccess max_vertices = Std.int(Math.min(128, lime.app.Application.current.window.stage.context3D.__context.gl.getInteger(0x8DE0)));
+		@:privateAccess var gIV:Int->Int = lime.app.Application.current.window.stage.context3D.__context.gl.getInteger;
+		max_vertices = Std.int(Math.min(gIV(0x8de1) / components, gIV(0x8DE0)));
 		this.version = version;
 		super();
 	}
@@ -109,12 +110,9 @@ class GeometryShader extends FlxShader
 	{
 		@:privateAccess var gl = __context.gl;
 		
-		@:privateAccess var mvs:Int = Std.int(Math.min(128, __context.__context.gl.getInteger(0x8DE0))); // i hate you nvidia
-		max_vertices = mvs;
-		
 		var vertexShader = __createGLShader((version != null ? '#version $version\n' : '') + vertexSource, gl.VERTEX_SHADER);
 		var fragmentShader = __createGLShader((version != null ? '#version $version\n' : '') + fragmentSource, gl.FRAGMENT_SHADER);
-		var geometryShader = geometrySource != null ? __createGLShader(geometrySource.replace('GEOM_MAX_VERTICES', '$mvs'), 0x8DD9) : null;
+		var geometryShader = geometrySource != null ? __createGLShader(geometrySource.replace('GEOM_MAX_VERTICES', '$max_vertices'), 0x8DD9) : null;
 		
 		var program = gl.createProgram();
 		

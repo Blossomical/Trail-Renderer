@@ -34,13 +34,12 @@ class DynamicTrailShader extends CustomGeometry
 		uniform float textureSegmentLength;
 
 		uniform float geometry_totalLength;
-		varying float segDist;
         void main() { 
             float alphaV = geometryTextureCoord.x;
 			float coordU = geometryTextureCoord.x;
 
 			if (autoDivide)
-				coordU = mod(segDist, textureSegmentLength) / textureSegmentLength;
+				coordU = mod(coordU * geometry_totalLength, textureSegmentLength) / textureSegmentLength;
 			
             gl_FragColor = flixel_texture2D(texture, vec2(mod(coordU * textureSegments, textureSegments) - offsetX, geometryTextureCoord.y - offsetY));
 

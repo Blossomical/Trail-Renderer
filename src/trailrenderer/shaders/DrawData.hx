@@ -24,7 +24,7 @@ abstract DrawData<T>(TDrawData<T>)
 		this = {
 			data: data,
 			length: length,
-			shaderArray: new Float32Array(null, null, data)
+			shaderArray: new Float32Array(data)
 		};
 	}
 	
@@ -56,7 +56,7 @@ abstract DrawData<T>(TDrawData<T>)
 	public function clear()
 	{
 		this.data = [];
-		this.shaderArray = new Float32Array(null, null, this.data);
+		this.shaderArray = new Float32Array(this.data);
 		if (this.changeCallback != null)
 			this.changeCallback(0, cast 0);
 	}
@@ -84,7 +84,7 @@ abstract DrawData<T>(TDrawData<T>)
 		var value:Array<T> = this.data.splice(pos, len);
 		for (i in 0...(len - pos))
 			this.shaderArray[pos + i] = cast 0;
-
+			
 		if (this.changeCallback != null)
 			this.changeCallback(pos, cast 0);
 		return value;
@@ -112,7 +112,7 @@ abstract DrawData<T>(TDrawData<T>)
 	
 	private function get_length():Int
 		return this.data.length;
-
+		
 	private function set_changeCallback(value:(index:Int, value:T) -> Void)
 		return this.changeCallback = value;
 		
@@ -125,10 +125,12 @@ abstract DrawData<T>(TDrawData<T>)
 	private function set_data(value:Array<T>):Array<T>
 	{
 		this.data = value;
+		this.shaderArray = new Float32Array(value);
 		if (this.changeCallback != null)
 			this.changeCallback(0, cast 0);
 		return value;
 	}
+	
 	private function get_shaderArray():Float32Array
 		return this.shaderArray;
 }
